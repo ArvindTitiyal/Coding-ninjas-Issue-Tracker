@@ -18,14 +18,16 @@ const ProjectSchema = new Schema({
   ],
 });
 
-// After deleting campground, all reviews associated with it will be removed.
-// "findOneAndDelete" will be only trigerred, if the campground is deleted by "findByIdAndDelete"
+// After deleting a project, delete all associated issues
+// This post middleware is triggered when using "findOneAndDelete"
+// It ensures that associated issues are removed when a project is deleted
 ProjectSchema.post('findOneAndDelete', async function (project) {
   if (project) {
     await Issue.deleteMany({ _id: { $in: project.issues } });
   }
 });
 
+// Create the Project model
 const Project = new mongoose.model('Project', ProjectSchema);
 
 module.exports = Project;
